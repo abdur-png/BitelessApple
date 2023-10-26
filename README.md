@@ -67,7 +67,7 @@ Path to First Draft Schema(db.mjs)[db.mjs]
 
 ## Site map
 
-Home Page Description:
+Home Page:
 The landing page with an overview of "SpecMyPhone" and its features.
 Links to:
 
@@ -75,28 +75,32 @@ Links to:
 2. Register
 3. Browse Specs (for non-registered users)
 
-Login Page Description:
+Login Page:
 Where existing users can enter their credentials to log in.
 Links to:
-Home Page (if user chooses not to login)
-Register (if a user doesn't have an account)
 
-Register Page Description:
+1. Home Page (if user chooses not to login)
+2. Register (if a user doesn't have an account)
+
+Register Page:
 New users can create an account.
 Links to:
-Home Page (if user chooses not to register)
-Login (for existing users)
 
-Add New Phone Review Page Description:
+1. Home Page (if user chooses not to register)
+2. Login (for existing users)
+
+Add New Phone Review Page:
 A form where users can input and save reviews for a phone model.
 Links to:
-User Dashboard (upon saving or if user chooses to go back without adding)
 
-Individual Phone Review Page Description:
+1. User Dashboard (upon saving or if user chooses to go back without adding)
+
+Individual Phone Review Page:
 Detailed view of specific phone specs where users can rate, edit, or share their reviews.
 Links to:
-User Dashboard (via navigation bar or after making modifications)
-Comparison Page (if a user wants to compare specs with another phone)
+
+1. User Dashboard (via navigation bar or after making modifications)
+2. Comparison Page (if a user wants to compare specs with another phone)
 
 ## User Stories or Use Cases
 
