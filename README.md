@@ -70,9 +70,10 @@ Path to First Draft Schema(db.mjs)[db.mjs]
 Home Page Description:
 The landing page with an overview of "SpecMyPhone" and its features.
 Links to:
-Login
-Register
-Browse Specs (for non-registered users)
+
+1. Login
+2. Register
+3. Browse Specs (for non-registered users)
 
 Login Page Description:
 Where existing users can enter their credentials to log in.
@@ -141,3 +142,5 @@ Use a CSS framework or UI toolkit, with a reasonable amount of customization of 
 Link to project file [https://github.com/nyu-csci-ua-0467-001-002-fall-2023/final-project-abdur-png.git]
 
 ## Annotations / References Used
+
+none
