@@ -61,7 +61,7 @@ Path to First Draft Schema(db.mjs)[db.mjs]
 
 ![list](documentation/phone_details_page.png)
 
-/list/slug - reviews page
+/list - reviews page
 
 ![list](documentation/reviews_page.png)
 
