@@ -10,42 +10,64 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
 // Exporting the connection
 export default mongoose;
 
-// Define a User Schema
-// const UserSchema = new mongoose.Schema({
-//     username: { type: String, required: true, unique: true },
-//     password: { type: String, required: true }, // Note: Store a hashed version of the password.
-//     email: { type: String, required: true, unique: true },
-//     // ... any other user related fields
-// });
-
-// // Define a Phone Specification Schema
-// const PhoneSpecSchema = new mongoose.Schema({
-//     brand: { type: String, required: true },
-//     model: { type: String, required: true },
-//     releaseDate: { type: Date },
-//     specifications: {
-//         ram: String,
-//         storage: String,
-//         camera: String,
-//         battery: String,
-//         os: String,
-//         // ... other specifications
-//     },
-//     reviews: [
-//         {
-//             reviewer: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-//             reviewText: String,
-//             rating: Number,
-//             // ... other review fields
-//         },
-//     ],
-//     // ... any other phone related fields
-// });
-
-// // Create the models
-// const User = mongoose.model('User', UserSchema);
-// const PhoneSpec = mongoose.model('PhoneSpec', PhoneSpecSchema);
+const userSchema = new mongoose.Schema({
+    username: {
+      type: String,
+      required: true,
+      unique: true
+    },
+    hash: {
+      type: String,
+      required: true
+    },
+    savedPhones: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Phone'
+    }]
+  });
+  const phoneSchema = new mongoose.Schema({
+    brand: String,
+    model: String,
+    specs: {
+      ram: String,
+      storage: String,
+      camera: String,
+      battery: String,
+      os: String,
+      screensize: String,
+    },
+    reviews: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Review'
+    }],
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }
+  });
+  const reviewSchema = new mongoose.Schema({
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    phone: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Phone'
+    },
+    rating: Number,
+    comment: String,
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }
+  });
+  
+  const Review = mongoose.model('Review', reviewSchema);
+  
+  const Phone = mongoose.model('Phone', phoneSchema);
+  
+  const User = mongoose.model('User', userSchema);
 
 // // Export the models for use in other parts of your application
-// export { User, PhoneSpec };
+export { User, Phone, Review };
  
