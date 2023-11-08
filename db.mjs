@@ -2,7 +2,11 @@ import mongoose from 'mongoose';
 const mongoURI = 'mongodb://ar7165:49fRMJTK@class-mongodb.cims.nyu.edu:21667/ar7165';
 import dotenv from 'dotenv';
 dotenv.config();
-
+// const mongooseOpts = {
+//     useNewUrlParser: true, // avoid DeprecationWarning: current URL string parser is deprecated
+//     useUnifiedTopology: true, // use the new topology engine, avoid DeprecationWarning for Server Discovery and Monitoring engine
+//     // Add other options here as needed
+//   };
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected...'))
   .catch(err => console.error('MongoDB connection error:', err));
