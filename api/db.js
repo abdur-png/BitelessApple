@@ -30,9 +30,9 @@ const phoneSchema = new mongoose.Schema({
   specs: {
     ram: String,
     storage: String,
-    camera: String,
+    // camera: String,
     battery: String,
-    os: String,
+    // os: String,
     screensize: String,
   },
   reviews: [{

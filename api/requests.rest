@@ -1,0 +1,9 @@
+
+GET http://localhost:21667/phones
+
+####
+
+POST http://localhost:21667/phones
+
+####
+DELETE http://localhost:21667/phones/654c2ce492feece20ece69be
