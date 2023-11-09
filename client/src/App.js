@@ -1,122 +1,90 @@
-import React, { useState } from 'react';
+// import React, { useState } from 'react';
+// import axios from 'axios';
+
+// const ReviewForm = () => {
+//   const [model, setModel] = useState('');
+//   const [review, setReview] = useState('');
+
+//   const handleSubmit = async (event) => {
+//     event.preventDefault();
+//     try {
+//       const response = await axios.post('/api/reviews', { model, review });
+//       console.log(response.data);
+//       // Add logic to handle successful submission (like clearing the form or providing user feedback)
+//     } catch (error) {
+//       console.error(error);
+//       // Handle errors (e.g., display an error message to the user)
+//     }
+//   };
+
+//   return (
+//     <form onSubmit={handleSubmit}>
+//       <label>
+//         Phone Model:
+//         <input type="text" value={model} onChange={(e) => setModel(e.target.value)} />
+//       </label>
+//       <label>
+//         Review:
+//         <textarea value={review} onChange={(e) => setReview(e.target.value)} />
+//       </label>
+//       <button type="submit">Submit Review</button>
+//     </form>
+//   );
+// };
+
+// export default ReviewForm;import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import ReviewForm from './ReviewForm';
+import ReviewsList from './ReviewsList';
+import React, { useState, useEffect } from 'react';
 
-function PhoneForm() {
-  // Set initial state that matches your phone schema structure
-  const [phone, setPhone] = useState({
-    brand: '',
-    model: '',
-    specs: {
-      ram: '',
-      storage: '',
-      battery: '',
-      screensize: '',
-    },
 
-  });
+const App = () => {
+  const [reviews, setReviews] = useState([]);
+  // Replace 'PHONE_NAME_HERE' with the actual name of the phone you want to query.
+  const phoneId = 'PHONE_NAME_HERE'; // Example: 'iPhone-12'
 
-  // handleChange for nested state
-  const handleChange = e => {
-    const { name, value } = e.target;
-    if (name in phone.specs) {
-      setPhone(prevPhone => ({
-        ...prevPhone,
-        specs: {
-          ...prevPhone.specs,
-          [name]: value,
-        },
-      }));
-    } else {
-      setPhone(prevPhone => ({
-        ...prevPhone,
-        [name]: value,
-      }));
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        // Ensure the URL is correct based on your backend API structure
+        const response = await axios.get(`/api/phones/${encodeURIComponent(phoneId)}/reviews`);
+        setReviews(response.data);
+      } catch (error) {
+        // Make sure to access the correct error property based on the actual error object structure
+        console.error('Error fetching reviews:', error.response?.data?.message || error.message);
+      }
+    };
+    
+    if (phoneId !== 'PHONE_NAME_HERE') {
+      fetchReviews();
     }
+  }, [phoneId]);
+
+  const addReviewToList = (review) => {
+    setReviews([...reviews, review]);
   };
 
-  // handleSubmit function for submitting the form
-  const handleSubmit = async e => {
-    e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:21667/phones', phone);
-      console.log(response.data); // Log response data from the server
-      alert('Phone added successfully!');
-      setPhone({
-        brand: '',
-        model: '',
-        specs: {
-          ram: '',
-          storage: '',
-          battery: '',
-          screensize: '',
-        },
-      });
-    } catch (error) {
-      console.error('There was an error submitting the form:', error);
-      alert('There was an error submitting the form.');
-    }
+  const removeReviewFromList = (id) => {
+    setReviews(reviews.filter((review) => review._id !== id));
+  };
+
+  const setReviewToEdit = (review) => {
+    // Set state for review to be edited, and pass it down to ReviewForm
+    // Implementation depends on how you want to handle editing reviews.
   };
 
   return (
-    <>
-      {/* Adding a header section with a title and app name */}
-      <header>
-        <h1>SpecMyPhone</h1> 
-        <h2>Add Phone</h2> 
-      </header>
-
-      {/* The form for adding a new phone */}
-      <form onSubmit={handleSubmit}>
-        {/* Input for brand */}
-        <input
-          type="text"
-          name="brand"
-          value={phone.brand}
-          onChange={handleChange}
-          placeholder="Brand"
-        />
-        {/* Input for model */}
-        <input
-          type="text"
-          name="model"
-          value={phone.model}
-          onChange={handleChange}
-          placeholder="Model"
-        />
-        {/* Input fields for specs */}
-        <input
-          type="text"
-          name="ram"
-          value={phone.specs.ram}
-          onChange={handleChange}
-          placeholder="RAM"
-        />
-        <input
-          type="text"
-          name="storage"
-          value={phone.specs.storage}
-          onChange={handleChange}
-          placeholder="Storage"
-        />
-        <input
-          type="text"
-          name="battery"
-          value={phone.specs.battery}
-          onChange={handleChange}
-          placeholder="Battery"
-        />
-        <input
-          type="text"
-          name="screensize"
-          value={phone.specs.screensize}
-          onChange={handleChange}
-          placeholder="Screen Size"
-        />
-        {/* Submit button */}
-        <button type="submit">Submit</button>
-      </form>
-    </>
+    <div>
+      <h1>Phone Reviews</h1>
+      <ReviewForm phoneId={phoneId} addReviewToList={addReviewToList} />
+      <ReviewsList
+        reviews={reviews}
+        removeReviewFromList={removeReviewFromList}
+        setReviewToEdit={setReviewToEdit}
+      />
+    </div>
   );
-}
+};
 
-export default PhoneForm;
+export default App;

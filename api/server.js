@@ -1,3 +1,4 @@
+require('dotenv').config(); 
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -12,13 +13,36 @@ app.use(cors());
 
 const JWT_SECRET = "ILOVEAIT"; 
 
+const authenticate = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'Authentication token is missing or invalid' });
+  }
+
+  const token = authHeader.substring(7); // Cut "Bearer " from the header to get the token
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = { _id: decoded.userId };
+    next();
+  } catch (error) {
+    res.status(403).json({ message: 'Invalid or expired token' });
+  }
+};
+
+
 mongoose.connect("mongodb://ar7165:49fRMJTK@class-mongodb.cims.nyu.edu/ar7165",{
-    useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: false
   })
   .then(() => console.log("Connected to DB!"))
   .catch(console.error);
 
+  const errorHandler = (error, req, res, next) => {
+    console.error(error.stack);
+    res.status(500).send({ message: error.message || "An unexpected error occurred" });
+  };
+  app.use(errorHandler);
 // CREATE a new phone
 app.post('/phones', async (req, res) => {
   try {
@@ -83,7 +107,7 @@ app.delete('/phones/:id', async (req, res) => {
   }
 });
 
-app.post('/login', async (req, res) => {
+app.post('/login', async (req, res, next) => {
   try {
     const { username, password } = req.body;
     const user = await User.findOne({ username });
@@ -93,18 +117,101 @@ app.post('/login', async (req, res) => {
     }
 
     // Compare the hashed password
-    const isMatch = await bcrypt.compare(password, user.hash);
+    const isMatch = await bcrypt.compare(password, user.hash); 
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid username or password' });
     }
 
     // Create a token
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET);
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' }); // Tokens should have an expiration
 
     res.json({ message: 'Login successful', token });
   } catch (error) {
-    res.status(500).json({ message: 'An error occurred while trying to log in', error: error.message });
+    next(error); // Pass errors to the error handling middleware
   }
+});
+
+app.post('/api/phones/:phoneModel/reviews', async (req, res) => {
+  try {
+    // Find the phone by name (assuming phoneName is unique)
+    const phone = await Phone.findOne({ model: req.params.phoneName });
+    if (!phone) {
+      return res.status(404).json({ message: 'Phone not found' });
+    }
+
+    // Create a new review with the phone ID and the review data
+    const newReview = new Review({
+      ...req.body,
+      phone: phone._id,
+      user: req.user._id
+    });
+
+    // Save the review
+    const savedReview = await newReview.save();
+
+    // Optionally, add the review to the phone's reviews array
+    phone.reviews.push(savedReview._id);
+    await phone.save();
+
+    res.status(201).json(savedReview);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+
+// Edit a review
+app.put('/reviews/:reviewId', authenticate, async (req, res) => {
+  try {
+    const { rating, comment } = req.body;
+    const reviewId = req.params.reviewId;
+
+    // Find the review and update it
+    const review = await Review.findOneAndUpdate(
+      { _id: reviewId, user: req.user._id }, // ensure that the review belongs to the user
+      { rating, comment },
+      { new: true }
+    );
+
+    if (!review) {
+      return res.status(404).json({ message: 'Review not found or user not authorized to edit this review' });
+    }
+
+    res.json(review);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Delete a review
+app.delete('/reviews/:reviewId', authenticate, async (req, res) => {
+  try {
+    const reviewId = req.params.reviewId;
+
+    // Find the review and delete it
+    const review = await Review.findOneAndDelete({ _id: reviewId, user: req.user._id });
+
+    if (!review) {
+      return res.status(404).json({ message: 'Review not found or user not authorized to delete this review' });
+    }
+
+    // Remove the review from the associated phone
+    await Phone.findByIdAndUpdate(review.phone, { $pull: { reviews: review._id } });
+
+    res.json({ message: 'Review deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  res.status(statusCode).json({
+    message: err.message,
+    // stack trace should not be returned in production
+    stack: process.env.NODE_ENV === 'production' ? '🥞' : err.stack,
+  });
 });
 
 // Start the server

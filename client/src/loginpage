@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom'; // Assuming you are using react-router-dom for navigation
 
 function LoginPage() {
   const [credentials, setCredentials] = useState({
-    email: '',
+    username: '', // Changed from email to username
     password: '',
   });
 
@@ -18,10 +19,11 @@ function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Replace with your API endpoint
-      const response = await axios.post('http://localhost:21667/login', credentials);
+      const response = await axios.post('http://localhost:21667/login', {
+        email: credentials.username, 
+        password: credentials.password,
+      });
       console.log(response.data);
-      // Handle login success (e.g., saving the token, redirecting the user)
       alert('Login successful!');
     } catch (error) {
       console.error('Login failed:', error);
@@ -34,13 +36,14 @@ function LoginPage() {
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="email">Email:</label>
+          <label htmlFor="username">Username:</label>
           <input
-            type="email"
-            id="email"
-            name="email"
-            value={credentials.email}
+            type="text"
+            id="username"
+            name="username"
+            value={credentials.username}
             onChange={handleChange}
+            placeholder="techgeek@hotmail.com" // Example input as a placeholder
             required
           />
         </div>
@@ -52,11 +55,17 @@ function LoginPage() {
             name="password"
             value={credentials.password}
             onChange={handleChange}
+            placeholder="********" // Placeholder for password
             required
           />
         </div>
         <button type="submit">Login</button>
       </form>
+      <div>
+        <Link to="/create-account">New User? Create Account</Link>
+        {/* Link to continue without an account */}
+        <Link to="/continue-without-account">Continue without an account</Link>
+      </div>
     </div>
   );
 }
