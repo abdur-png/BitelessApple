@@ -32,11 +32,11 @@ const authenticate = (req, res, next) => {
 
 
 mongoose.connect(process.env.DSN, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
-  .then(() => console.log("Connected to DB!"))
-  .catch(console.error);
+  useUnifiedTopology: true,
+  useNewUrlParser: true
+})
+.then(() => console.log("Connected to DB!"))
+.catch(console.error);
 
   const errorHandler = (error, req, res, next) => {
     console.error(error.stack);
