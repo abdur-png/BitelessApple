@@ -31,10 +31,10 @@ const authenticate = (req, res, next) => {
 };
 
 
-mongoose.connect("mongodb://ar7165:49fRMJTK@class-mongodb.cims.nyu.edu/ar7165",{
-    useUnifiedTopology: true,
-    useFindAndModify: false
-  })
+mongoose.connect(process.env.DSN, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
   .then(() => console.log("Connected to DB!"))
   .catch(console.error);
 
