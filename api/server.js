@@ -137,14 +137,14 @@ app.post('/api/phones/:phoneName/reviews', async (req, res) => {
 });
 
 // UPDATE a review by ID
-app.put('/api/reviews/:reviewId', authenticate, async (req, res) => {
+app.put('/api/reviews/:reviewId', async (req, res) => {
   const { rating, comment } = req.body;
   const { reviewId } = req.params;
 
   try {
     const review = await Review.findByIdAndUpdate(reviewId, { rating, comment }, { new: true });
     if (!review) {
-      return res.status(404).json({ message: 'Review not found or not authorized' });
+      return res.status(404).json({ message: 'Review not found' });
     }
     res.json(review);
   } catch (error) {
@@ -153,16 +153,17 @@ app.put('/api/reviews/:reviewId', authenticate, async (req, res) => {
 });
 
 // DELETE a review by ID
-app.delete('/api/reviews/:reviewId', authenticate, async (req, res) => {
+app.delete('/api/reviews/:reviewId', async (req, res) => {
   const { reviewId } = req.params;
   try {
-    const review = await Review.findByIdAndRemove(reviewId);
-    if (!review) {
-      return res.status(404).json({ message: 'Review not found or not authorized' });
+    // Using deleteOne with the condition directly
+    const result = await Review.deleteOne({ _id: reviewId });
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: 'Review not found' });
     }
     res.json({ message: 'Review deleted successfully' });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 
