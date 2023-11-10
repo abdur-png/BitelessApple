@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-require('dotenv').config();
+require('dotenv').config({ path: '../.env' });
 
 const mongoURI = process.env.DSN; // Assuming you store your MongoDB URI in an environment variable for security
 
