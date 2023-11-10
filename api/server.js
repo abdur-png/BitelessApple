@@ -44,7 +44,8 @@ mongoose.connect("mongodb://ar7165:49fRMJTK@class-mongodb.cims.nyu.edu/ar7165",{
   };
   app.use(errorHandler);
 // CREATE a new phone
-app.post('/phones', async (req, res) => {
+
+app.post('/api/phones', async (req, res) => {
   try {
     const newPhone = new Phone(req.body);
     const savedPhone = await newPhone.save();
@@ -55,21 +56,20 @@ app.post('/phones', async (req, res) => {
 });
 
 // READ all phones
-app.get('/phones', async (req, res) => {
-    console.log("GET request received for /phones");
-    try {
-      const phones = await Phone.find();
-      console.log("Phones found:", phones);
-      res.json(phones);
-    } catch (error) {
-      console.error("Error fetching phones:", error);
-      res.status(500).json({ message: error.message });
-    }
-  });
-  
-
+app.get('/api/phones', async (req, res) => {
+  try {
+    const phones = await Phone.find();
+    res.json(phones);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+// app.get('//api/phones/:id', async (req, res) => {
+//   console.log("text 1, 2");
+// });
 // READ a single phone by ID
-app.get('/phones/:id', async (req, res) => {
+app.get('/api/phones/:id', async (req, res) => {
+  console.log(req.params.id)
   try {
     const phone = await Phone.findById(req.params.id);
     if (!phone) {
@@ -82,7 +82,7 @@ app.get('/phones/:id', async (req, res) => {
 });
 
 // UPDATE a phone by ID
-app.patch('/phones/:id', async (req, res) => {
+app.patch('/api/phones/:id', async (req, res) => {
   try {
     const phone = await Phone.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!phone) {
@@ -95,7 +95,7 @@ app.patch('/phones/:id', async (req, res) => {
 });
 
 // DELETE a phone by ID
-app.delete('/phones/:id', async (req, res) => {
+app.delete('/api/phones/:id', async (req, res) => {
   try {
     const phone = await Phone.findByIdAndDelete(req.params.id);
     if (!phone) {
@@ -106,50 +106,27 @@ app.delete('/phones/:id', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
-app.post('/login', async (req, res, next) => {
+app.post('/api/phones/:phoneName/reviews', async (req, res) => {
+  console.log(req.params.phoneName);
+  const { phoneName } = req.params;
+  const { rating, comment } = req.body;
   try {
-    const { username, password } = req.body;
-    const user = await User.findOne({ username });
-
-    if (!user) {
-      return res.status(401).json({ message: 'Invalid username or password' });
-    }
-
-    // Compare the hashed password
-    const isMatch = await bcrypt.compare(password, user.hash); 
-    if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid username or password' });
-    }
-
-    // Create a token
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' }); // Tokens should have an expiration
-
-    res.json({ message: 'Login successful', token });
-  } catch (error) {
-    next(error); // Pass errors to the error handling middleware
-  }
-});
-
-app.post('/api/phones/:phoneModel/reviews', async (req, res) => {
-  try {
-    // Find the phone by name (assuming phoneName is unique)
-    const phone = await Phone.findOne({ model: req.params.phoneName });
+    let phone = await Phone.findOne({ phone_name: phoneName });
+      
     if (!phone) {
-      return res.status(404).json({ message: 'Phone not found' });
+      phone = new Phone({ phone_name: phoneName });
+      await phone.save();
     }
+    console.log(phone);
 
-    // Create a new review with the phone ID and the review data
     const newReview = new Review({
-      ...req.body,
+      rating,
+      comment,
       phone: phone._id,
-      user: req.user._id
+      // user: req.user._id
     });
 
-    // Save the review
     const savedReview = await newReview.save();
-
-    // Optionally, add the review to the phone's reviews array
     phone.reviews.push(savedReview._id);
     await phone.save();
 
@@ -159,60 +136,38 @@ app.post('/api/phones/:phoneModel/reviews', async (req, res) => {
   }
 });
 
+// UPDATE a review by ID
+app.put('/api/reviews/:reviewId', authenticate, async (req, res) => {
+  const { rating, comment } = req.body;
+  const { reviewId } = req.params;
 
-// Edit a review
-app.put('/reviews/:reviewId', authenticate, async (req, res) => {
   try {
-    const { rating, comment } = req.body;
-    const reviewId = req.params.reviewId;
-
-    // Find the review and update it
-    const review = await Review.findOneAndUpdate(
-      { _id: reviewId, user: req.user._id }, // ensure that the review belongs to the user
-      { rating, comment },
-      { new: true }
-    );
-
+    const review = await Review.findByIdAndUpdate(reviewId, { rating, comment }, { new: true });
     if (!review) {
-      return res.status(404).json({ message: 'Review not found or user not authorized to edit this review' });
+      return res.status(404).json({ message: 'Review not found or not authorized' });
     }
-
     res.json(review);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
-// Delete a review
-app.delete('/reviews/:reviewId', authenticate, async (req, res) => {
+// DELETE a review by ID
+app.delete('/api/reviews/:reviewId', authenticate, async (req, res) => {
+  const { reviewId } = req.params;
   try {
-    const reviewId = req.params.reviewId;
-
-    // Find the review and delete it
-    const review = await Review.findOneAndDelete({ _id: reviewId, user: req.user._id });
-
+    const review = await Review.findByIdAndRemove(reviewId);
     if (!review) {
-      return res.status(404).json({ message: 'Review not found or user not authorized to delete this review' });
+      return res.status(404).json({ message: 'Review not found or not authorized' });
     }
-
-    // Remove the review from the associated phone
-    await Phone.findByIdAndUpdate(review.phone, { $pull: { reviews: review._id } });
-
     res.json({ message: 'Review deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
-
-app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  res.status(statusCode).json({
-    message: err.message,
-    // stack trace should not be returned in production
-    stack: process.env.NODE_ENV === 'production' ? '🥞' : err.stack,
-  });
-});
+// Apply the error handler
+app.use(errorHandler);
 
 // Start the server
 const PORT = process.env.PORT || 3000;

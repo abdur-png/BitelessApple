@@ -25,14 +25,11 @@ const userSchema = new mongoose.Schema({
 });
 
 const phoneSchema = new mongoose.Schema({
-  brand: String,
-  model: String,
+  phone_name: String,
   specs: {
     ram: String,
     storage: String,
-    // camera: String,
     battery: String,
-    // os: String,
     screensize: String,
   },
   reviews: [{

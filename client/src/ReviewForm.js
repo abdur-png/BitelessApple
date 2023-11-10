@@ -9,16 +9,28 @@ const ReviewForm = () => {
   const submitReview = async (e) => {
     e.preventDefault();
     try {
-      // Assuming you have an endpoint to add a review by phone name
-      const response = await axios.post(`/api/phones/${phoneName}/reviews`, {
+      // Ensure phoneName is correctly set from the input field
+      if (!phoneName) {
+        throw new Error('Phone name is required.');
+      }
+
+      const response = await axios.post(`http://localhost:3000/api/phones/${encodeURIComponent(phoneName)}/reviews`, {
         rating,
         comment
       });
+
+    //   const addReviewToList = (newReview) => {
+    //     setReviews(currentReviews => [...currentReviews, newReview]);
+    //   };
+
       console.log(response.data);
     } catch (error) {
-      console.error('Error submitting review:', error.response.data);
+      // Gracefully inform the user of a failure
+      alert(error.response?.data?.message || 'Error submitting review.');
+      console.error('Error submitting review:', error.response?.data?.message || error);
     }
   };
+  
 
   return (
     <form onSubmit={submitReview}>
