@@ -1,5 +1,6 @@
-require('dotenv').config({ path: '../.env' }); 
+require('dotenv').config(); 
 const express = require('express');
+const path = require('path');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bcryptjs = require('bcryptjs');
@@ -30,7 +31,7 @@ const authenticate = (req, res, next) => {
   }
 };
 
-
+console.log('MongoDB URI:', process.env.DSN);
 mongoose.connect(process.env.DSN, {
   useUnifiedTopology: true,
   useNewUrlParser: true
@@ -166,12 +167,16 @@ app.delete('/api/reviews/:reviewId', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
+app.use(express.static(path.join(__dirname, '../client/build')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+});
 // Apply the error handler
 app.use(errorHandler);
 
 // Start the server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 21667;
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
+

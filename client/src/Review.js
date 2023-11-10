@@ -1,11 +1,11 @@
 import React from 'react';
 import axios from 'axios';
-
+const apiBaseUrl = process.env.REACT_APP_API_URL;
 const Review = ({ review, removeReviewFromList, setReviewToEdit }) => {
   const handleDelete = async () => {
     try {
       // Note that the authentication header has been removed
-      const response = await axios.delete(`http://localhost:3000/api/reviews/${review._id}`);
+      const response = await axios.delete(`${apiBaseUrl}/api/reviews/${review._id}`);
 
       // If the delete was successful, remove the review from the list
       if (response.status === 200) {

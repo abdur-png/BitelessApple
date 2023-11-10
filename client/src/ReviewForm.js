@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+const apiBaseUrl = process.env.REACT_APP_API_URL;
 
 const ReviewForm = ({ addOrUpdateReviewToList, reviewToEdit, setReviewToEdit }) => {
   // Initialize the form state
@@ -27,13 +28,13 @@ const ReviewForm = ({ addOrUpdateReviewToList, reviewToEdit, setReviewToEdit }) 
       let response;
       if (reviewToEdit) {
         // Edit mode: PUT request to update the existing review
-        response = await axios.put(`http://localhost:3000/api/reviews/${reviewToEdit._id}`, {
+        response = await axios.put(`${apiBaseUrl}/api/reviews/${reviewToEdit._id}`, {
           rating: parseInt(rating),
           comment
         });
       } else {
         // Create mode: POST request to create a new review
-        response = await axios.post(`http://localhost:3000/api/phones/${encodeURIComponent(phoneName)}/reviews`, {
+        response = await axios.post(`${apiBaseUrl}/api/phones/${encodeURIComponent(phoneName)}/reviews`, {
           rating: parseInt(rating),
           comment
         });

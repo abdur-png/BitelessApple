@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import ReviewForm from './ReviewForm';
 import ReviewsList from './ReviewsList';
-
+const apiBaseUrl = process.env.REACT_APP_API_URL;
 const App = () => {
   const [reviews, setReviews] = useState([]);
   const [phoneName, setPhoneName] = useState('');
@@ -13,7 +13,7 @@ const App = () => {
       if (!phoneName) return;
 
       try {
-        const response = await axios.get(`http://localhost:3000/api/phones/${encodeURIComponent(phoneName)}/reviews`);
+        const response = await axios.get(`${apiBaseUrl}/api/phones/${encodeURIComponent(phoneName)}/reviews`);
         setReviews(response.data);
       } catch (error) {
         console.error('Error fetching reviews:', error.response?.data?.message || error.message);
