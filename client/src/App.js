@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import ReviewForm from './ReviewForm';
 import ReviewsList from './ReviewsList';
 const apiBaseUrl = process.env.REACT_APP_API_URL;
+console.log(apiBaseUrl);
 const App = () => {
   const [reviews, setReviews] = useState([]);
   const [phoneName, setPhoneName] = useState('');
