@@ -65,10 +65,6 @@ app.get('/api/phones', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-// app.get('//api/phones/:id', async (req, res) => {
-//   console.log("text 1, 2");
-// });
-// READ a single phone by ID
 app.get('/api/phones/:id', async (req, res) => {
   console.log(req.params.id)
   try {

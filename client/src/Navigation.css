@@ -1,0 +1,47 @@
+/* Navigation.css */
+
+.navigation {
+    display: flex;
+    justify-content: flex-start; /* Align items to the start of the flex container */
+    align-items: center;
+    padding: 1rem;
+    background-color: transparent; /* Transparent background */
+    position: fixed; /* Fixed to the top */
+    top: 0;
+    left: 0;
+    width: 100%; /* Full width */
+    z-index: 10; /* Above the background image */
+    /* ... other styles ... */
+  }
+  
+  .logo img {
+    
+    width: 50px; /* Adjust the logo size if necessary */
+    height: auto; /* This will maintain the aspect ratio of the logo */
+  }
+  
+  .logo {
+    /* No margin needed on the left side of the logo */
+    margin-left: 3rem;
+    margin-right: 64px;
+    /* Adjust the right margin to create space between the logo and the nav links */
+    gap: 80px; /* Adjust this value to control the space next to the logo */
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+    align-items: center; /* Align the items vertically */
+    gap: 80px; /* This controls the space between the navigation links */
+    padding-left: 0; /* Remove padding-left to align the links to the right of the logo */
+  }
+  
+  .nav-links li a {
+    color: #fff; /* This will make the links white */
+    gap: 80px;
+    text-decoration: none;
+    /* ... other styles ... */
+  }
+  
+
+  
