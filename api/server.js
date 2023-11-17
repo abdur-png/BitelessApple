@@ -65,6 +65,15 @@ app.get('/api/phones', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+app.get('/api/phones/names', async (req, res) => {
+  try {
+    const phoneNames = await Phone.distinct('phone_name');
+    res.json(phoneNames);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 app.get('/api/phones/:id', async (req, res) => {
   console.log(req.params.id)
   try {
