@@ -8,9 +8,18 @@ import HomePage from './HomePage';
 import ReviewForm from './ReviewForm';
 import ReviewsList from './ReviewsList';
 import LoginPage from './loginpage';
-import RegisterPage from './RegisterPage';
+// import RegisterPage from './RegisterPage';
 import ReviewsPage from './ReviewsPage';
 const apiBaseUrl = process.env.REACT_APP_API_URL;
+
+
+const rootStyle = {
+  backgroundColor: 'black',
+  color: 'white',
+  minHeight: '100vh', // Use minHeight to ensure it covers at least the full height of the viewport
+  margin: 0, // Reset default margin
+  padding: 0, // Reset default padding
+};
 
 const App = () => {
   const [reviews, setReviews] = useState([]);
@@ -83,7 +92,7 @@ const App = () => {
           </>
         } />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        {/* <Route path="/register" element={<RegisterPage />} /> */}
         <Route path="/reviews-page" element={
           <ReviewsPage
             reviews={reviews}
