@@ -85,11 +85,11 @@ const App = () => {
               reviewToEdit={reviewToEdit}
               setReviewToEdit={setReviewToEdit}
             />
-            <ReviewsList
+            {/* <ReviewsList
               reviews={reviews}
               removeReviewFromList={removeReviewFromList}
               setReviewToEdit={setReviewToEdit}
-            />
+            /> */}
           </>
         } />
         <Route path="/login" element={<LoginPage />} />

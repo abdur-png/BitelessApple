@@ -57,7 +57,6 @@ const DeviceReviews = () => {
             <li key={review._id}>
               <p>Rating: {review.rating}</p>
               <p>Comment: {review.comment}</p>
-              {/* Optionally, display more information about the review or reviewer */}
             </li>
           ))
         ) : (

@@ -69,6 +69,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom'; // Import Link
+import './ReviewsDisplay.css';
 
 const ReviewsDisplay = () => {
   const [devices, setDevices] = useState([]); // New state for devices
@@ -115,13 +116,12 @@ const ReviewsDisplay = () => {
   }
 
   return (
-    <div style={pageStyles}>
+    <div className="page-container">
       <h1>All Devices</h1>
-      <ul>
+      <ul className="device-list">
         {devices.map((deviceName) => (
-          <li key={deviceName}>
-            {/* Wrap the device name in a Link component */}
-            <Link to={`/phones/${encodeURIComponent(deviceName)}/reviews`}>
+          <li key={deviceName} className="device-list-item">
+            <Link to={`/phones/${encodeURIComponent(deviceName)}/reviews`} className="device-link">
               {deviceName}
             </Link>
           </li>

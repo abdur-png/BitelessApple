@@ -1,0 +1,43 @@
+/* ReviewsDisplay.css */
+
+.page-container {
+    background-color: black;
+    color: white;
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align items to the left */
+    padding-top: 100px;
+    padding-left: 5%; /* Move content to the right */
+  }
+  
+  .device-list {
+    list-style-type: none; /* Remove default list styling */
+    padding: 0;
+  }
+  
+  .device-list-item {
+    margin-bottom: 10px; /* Add space between items */
+  }
+  
+  .device-link {
+    color: white; /* White text for links */
+    text-decoration: none; /* Remove underline */
+    font-size: 1.2rem; /* Increase font size */
+    transition: color 0.3s; /* Transition for hover effect */
+  }
+  
+  .device-link:hover {
+    color: #ddd; /* Lighter color on hover */
+  }
+  
+  .device-list-item:first-child {
+    margin-top: 30px; /* Increase space between the heading and the first device */
+  }
+  
+  

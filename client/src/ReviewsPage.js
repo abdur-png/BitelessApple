@@ -60,11 +60,6 @@ const ReviewsPage = ({
       <p style={encouragementStyles}>
         Your ideas bring us closer to perfection – we can't wait to hear them!
       </p>
-      <ReviewsList
-        reviews={reviews}
-        removeReviewFromList={removeReviewFromList}
-        setReviewToEdit={setReviewToEdit}
-      />
     </div>
   );
 };
