@@ -8,7 +8,7 @@ import HomePage from './HomePage';
 import ReviewForm from './ReviewForm';
 import ReviewsList from './ReviewsList';
 import LoginPage from './loginpage';
-// import RegisterPage from './RegisterPage';
+import ReviewsDisplay from './ReviewsDisplay';
 import ReviewsPage from './ReviewsPage';
 const apiBaseUrl = process.env.REACT_APP_API_URL;
 
@@ -102,12 +102,17 @@ const App = () => {
             removeReviewFromList={removeReviewFromList}
           />
         } />
+        <Route path="/all-reviews" element={<ReviewsDisplay />} /> 
         <Route path="/review-form" element={<ReviewForm 
           addOrUpdateReviewToList={addOrUpdateReviewToList}
           reviewToEdit={null} // You can pass null if the initial state is not needed
           setReviewToEdit={setReviewToEdit}
         />} />
-        {/* <Route path="/review-phone" element={<ReviewPhone />} /> */}
+        <Route path="/review-form" element={<ReviewForm 
+          addOrUpdateReviewToList={addOrUpdateReviewToList}
+          reviewToEdit={null} // You can pass null if the initial state is not needed
+          setReviewToEdit={setReviewToEdit}
+        />} />
       </Routes>
     </Router>
   );

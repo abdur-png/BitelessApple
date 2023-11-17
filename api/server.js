@@ -77,6 +77,27 @@ app.get('/api/phones/:id', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+app.get('/api/reviews', async (req, res) => {
+  try {
+    const reviews = await Review.find().populate('phone');
+    res.json(reviews);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+app.get('/api/phones/:phoneName/reviews', async (req, res) => {
+  try {
+    const { phoneName } = req.params;
+    const phone = await Phone.findOne({ phone_name: phoneName });
+    if (!phone) {
+      return res.status(404).json({ message: 'Phone not found' });
+    }
+    const reviews = await Review.find({ phone: phone._id }).populate('phone');
+    res.json(reviews);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 // UPDATE a phone by ID
 app.patch('/api/phones/:id', async (req, res) => {
@@ -164,6 +185,7 @@ app.delete('/api/reviews/:reviewId', async (req, res) => {
   }
 });
 app.use(express.static(path.join(__dirname, '../client/build')));
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
 });

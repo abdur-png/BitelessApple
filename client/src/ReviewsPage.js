@@ -1,3 +1,4 @@
+//ReviewsPage.js
 import React from 'react';
 import ReviewForm from './ReviewForm';
 import ReviewsList from './ReviewsList';
@@ -9,7 +10,7 @@ const ReviewsPage = ({
   setReviewToEdit,
   removeReviewFromList
 }) => {
-  // Inline style for the full page
+
   const pageStyles = {
     backgroundColor: 'black',
     color: 'white',
@@ -18,7 +19,7 @@ const ReviewsPage = ({
     position: 'fixed',
     top: 0,
     left: 0,
-    overflow: 'auto', // Changed to 'auto' to allow scrolling if needed
+    overflow: 'auto', 
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
