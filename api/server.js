@@ -6,7 +6,8 @@ const cors = require('cors');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User, Phone, Review } = require('./db.js'); // assuming your db.js is in the same directory
-
+const ReviewManager = require('./ReviewManager.js');
+const reviewManager = new ReviewManager(Review);
 const app = express();
 
 app.use(express.json());
@@ -133,27 +134,22 @@ app.delete('/api/phones/:id', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 app.post('/api/phones/:phoneName/reviews', async (req, res) => {
-  console.log(req.params.phoneName);
-  const { phoneName } = req.params;
-  const { rating, comment } = req.body;
   try {
-    let phone = await Phone.findOne({ phone_name: phoneName });
-      
+    let phone = await Phone.findOne({ phone_name: req.params.phoneName });
     if (!phone) {
-      phone = new Phone({ phone_name: phoneName });
+      phone = new Phone({ phone_name: req.params.phoneName });
       await phone.save();
     }
-    console.log(phone);
 
-    const newReview = new Review({
-      rating,
-      comment,
+    const savedReview = await reviewManager.addReview({
+      rating: req.body.rating,
+      comment: req.body.comment,
       phone: phone._id,
-      // user: req.user._id
+      // user: req.user._id (if needed)
     });
 
-    const savedReview = await newReview.save();
     phone.reviews.push(savedReview._id);
     await phone.save();
 
@@ -165,15 +161,12 @@ app.post('/api/phones/:phoneName/reviews', async (req, res) => {
 
 // UPDATE a review by ID
 app.put('/api/reviews/:reviewId', async (req, res) => {
-  const { rating, comment } = req.body;
-  const { reviewId } = req.params;
-
   try {
-    const review = await Review.findByIdAndUpdate(reviewId, { rating, comment }, { new: true });
-    if (!review) {
+    const updatedReview = await reviewManager.updateReview(req.params.reviewId, req.body);
+    if (!updatedReview) {
       return res.status(404).json({ message: 'Review not found' });
     }
-    res.json(review);
+    res.json(updatedReview);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -181,11 +174,9 @@ app.put('/api/reviews/:reviewId', async (req, res) => {
 
 // DELETE a review by ID
 app.delete('/api/reviews/:reviewId', async (req, res) => {
-  const { reviewId } = req.params;
   try {
-    // Using deleteOne with the condition directly
-    const result = await Review.deleteOne({ _id: reviewId });
-    if (result.deletedCount === 0) {
+    const result = await reviewManager.deleteReview(req.params.reviewId);
+    if (!result) {
       return res.status(404).json({ message: 'Review not found' });
     }
     res.json({ message: 'Review deleted successfully' });
