@@ -4,10 +4,11 @@ import axios from 'axios';
 const apiBaseUrl = process.env.REACT_APP_API_URL;
 
 const ReviewForm = ({ addOrUpdateReviewToList, reviewToEdit, setReviewToEdit }) => {
-  // Initialize the form state with the first iPhone model as default
-  const [phoneModel, setPhoneModel] = useState('iPhone 13');
+  const [phoneModel, setPhoneModel] = useState('');
   const [rating, setRating] = useState('');
   const [comment, setComment] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   // List of iPhone models for the dropdown
   const iphoneModels = [
@@ -27,8 +28,6 @@ const ReviewForm = ({ addOrUpdateReviewToList, reviewToEdit, setReviewToEdit }) 
     'AirPods',
     'AirPods Max',
     'HomePod',
-
-    // Add additional iPhone models here as needed
   ];
 
   // If editing a review, set the form fields to the current review's values
@@ -37,116 +36,105 @@ const ReviewForm = ({ addOrUpdateReviewToList, reviewToEdit, setReviewToEdit }) 
       setPhoneModel(reviewToEdit.phoneName || iphoneModels[0]);
       setRating(reviewToEdit.rating ? reviewToEdit.rating.toString() : '');
       setComment(reviewToEdit.comment || '');
-    } else {
-      setPhoneModel(iphoneModels[0]);
-      setRating('');
-      setComment('');
     }
-  }, [reviewToEdit]);
+  }, [reviewToEdit, iphoneModels]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Clear any previous messages
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    // Input validation
+    if (!rating.trim() || !comment.trim()) {
+      setErrorMessage('Rating and comment cannot be empty.');
+      return;
+    }
+
+    // Submit form
     try {
       let response;
       if (reviewToEdit) {
-        // Edit mode: PUT request to update the existing review
+        // Edit mode
         response = await axios.put(`${apiBaseUrl}/api/reviews/${reviewToEdit._id}`, {
           phoneName: phoneModel,
           rating: parseInt(rating, 10),
-          comment
+          comment,
         });
       } else {
-        // Create mode: POST request to create a new review
+        // Create mode
         response = await axios.post(`${apiBaseUrl}/api/phones/${encodeURIComponent(phoneModel)}/reviews`, {
           rating: parseInt(rating, 10),
-          comment
+          comment,
         });
       }
-
+      
       addOrUpdateReviewToList(response.data);
-      // Reset the form fields
-      setPhoneModel(iphoneModels[0]);
+      setSuccessMessage('Review submitted successfully!');
+      
+      // Reset form fields
+      setPhoneModel('');
       setRating('');
       setComment('');
+      
       if (reviewToEdit) {
-        setReviewToEdit(null); // Exit edit mode
+        setReviewToEdit(null);
       }
+      
     } catch (error) {
-      console.error('Error submitting feature request:', error.response?.data?.message || error.message || 'The request failed');
-      alert('Error submitting feature request: ' + (error.response?.data?.message || error.message || 'The request failed'));
+      setErrorMessage('Error submitting review: ' + (error.response?.data?.message || error.message || 'Please try again later.'));
     }
   };
 
-  const formStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    margin: '0',
-    padding: '20px'
-  };
-
-  const inputStyle = {
-    marginBottom: '15px', // More space between form elements
-    padding: '12px', // Bigger padding for larger touch targets
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    width: 'calc(100% - 24px)', // Adjust the width based on padding
-    fontSize: '1rem', // Bigger font size for better readability
-  };
-
-  const buttonStyle = {
-    padding: '10px 15px',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    backgroundColor: '#007bff',
-    color: 'white',
-    marginTop: '10px',
-  };
-
-  const labelStyle = {
-    marginBottom: '5px',
-    fontWeight: 'bold'
-  };
-
   return (
-    <div style={{ maxWidth: '500px', marginLeft: '20px' }}> {/* Container for the form */}
-      <form onSubmit={handleSubmit} style={formStyle}>
-        <label htmlFor="phoneModel" style={labelStyle}>Choose Device:</label>
+    <div className="review-form-container" style={{ maxWidth: '500px', margin: '0 auto' }}>
+    {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
+    {successMessage && (
+      <div style={{ color: 'green', marginBottom: '20px' }}>{successMessage}</div> // Added marginBottom here
+    )}
+    <form onSubmit={handleSubmit} className="review-form">
+      <div className="form-group" style={{ marginBottom: '1rem' }}>
+        <label htmlFor="phoneModel">Choose Device:</label>
         <select
           id="phoneModel"
           value={phoneModel}
           onChange={(e) => setPhoneModel(e.target.value)}
-          style={inputStyle}
+          required
+          style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
         >
+          <option value=""> </option>
           {iphoneModels.map(model => (
-            <option key={model} value={model}>
-              {model}
-            </option>
+            <option key={model} value={model}>{model}</option>
           ))}
         </select>
-
-        <label htmlFor="rating" style={labelStyle}>Rating:</label>
-        <input
-          type="number"
-          id="rating"
-          value={rating}
-          onChange={(e) => setRating(e.target.value)}
-          min="1" // Minimum value for rating
-          max="5" // Maximum value for rating
-          style={inputStyle}
-        />
-
-        <label htmlFor="comment" style={labelStyle}>Feature Request Details:</label>
-        <textarea
-          id="comment"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          style={inputStyle}
-          rows="4" // Set the number of rows for the textarea to define its height
-        />
-
-        <button type="submit" style={buttonStyle}>Submit Feature Request</button>
+      </div>
+        <div className="form-group" style={{ marginBottom: '1rem' }}>
+          <label htmlFor="rating">Rating:</label>
+          <input
+            type="number"
+            id="rating"
+            value={rating}
+            onChange={(e) => setRating(e.target.value)}
+            min="1"
+            max="5"
+            required
+            style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
+          />
+        </div>
+        <div className="form-group" style={{ marginBottom: '1rem' }}>
+          <label htmlFor="comment">Feature Request Details:</label>
+          <textarea
+            id="comment"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            rows="4"
+            required
+            style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
+          />
+        </div>
+        <button type="submit" className="submit-button" style={{ width: '100%', padding: '1rem', marginTop: '1rem' }}>
+          Submit Feature Request
+        </button>
       </form>
     </div>
   );
