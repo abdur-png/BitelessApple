@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
+
 const DeviceReviews = () => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -9,6 +10,8 @@ const DeviceReviews = () => {
   const [sortDirection, setSortDirection] = useState('desc');
   const [searchKeyword, setSearchKeyword] = useState('');
   const { deviceName } = useParams(); 
+  const [averageRating, setAverageRating] = useState(0);
+  const [mostCommonWord, setMostCommonWord] = useState('');
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -16,9 +19,33 @@ const DeviceReviews = () => {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/phones/${encodeURIComponent(deviceName)}/reviews`);
         setReviews(response.data);
         setLoading(false);
+
+        // Calculate average rating
+        const totalRating = response.data.reduce((acc, review) => acc + review.rating, 0);
+        setAverageRating((totalRating / response.data.length).toFixed(2));
+
+        // Calculate the most common word excluding stop words
+        const comments = response.data.map(review => review.comment.toLowerCase());
+        const words = comments.join(' ').match(/\w+/g) || [];
+        const wordFrequencies = words.reduce((acc, word) => {
+          if (!stopWords.has(word)) {
+            acc[word] = (acc[word] || 0) + 1;
+          }
+          return acc;
+        }, {});
+
+        let mostCommon = { word: '', count: 0 };
+        for (const [word, count] of Object.entries(wordFrequencies)) {
+          if (count > mostCommon.count) {
+            mostCommon = { word, count };
+          }
+        }
+
+        setMostCommonWord(mostCommon.word);
+
       } catch (error) {
-        console.error(`Error fetching reviews for ${deviceName}:`, error);
-        setError(`Failed to fetch reviews for ${deviceName}.`);
+        console.error(`Error fetching reviews: ${error}`);
+        setError('Failed to load reviews.');
         setLoading(false);
       }
     };
@@ -92,8 +119,10 @@ const DeviceReviews = () => {
   const searchContainerStyles = {
     display: 'flex',
     alignItems: 'center',
+    marginTop: '20px',
     marginBottom: '20px',
   };
+  
 
   const searchInputStyles = {
     padding: '10px',
@@ -115,7 +144,9 @@ const DeviceReviews = () => {
 
   return (
     <div style={pageStyles}>
-      <h1>Reviews for {deviceName}</h1>
+      <h1 style={headingStyles}>Requested features for {deviceName}</h1>
+      <p>Average Rating: {averageRating}</p>
+      <p>Most Requested Feature: {mostCommonWord}</p>
       <div style={searchContainerStyles}>
         <label htmlFor="searchComments" style={{ marginRight: '10px' }}>Search comments:</label>
         <input
@@ -147,5 +178,19 @@ const DeviceReviews = () => {
     </div>
   );
 };
-
+const stopWords = new Set([
+    'i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours',
+    'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers',
+    'herself', 'it', 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves',
+    'what', 'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are',
+    'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does',
+    'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until',
+    'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into',
+    'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down',
+    'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here',
+    'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more',
+    'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so',
+    'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should', 'now', 'change', 
+    'nothing', 'say', 'reduce','higher', 'basic', 'best', 'make'
+  ]);
 export default DeviceReviews;

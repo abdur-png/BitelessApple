@@ -70,7 +70,7 @@ const ReviewForm = ({ addOrUpdateReviewToList, reviewToEdit, setReviewToEdit }) 
       }
       
       addOrUpdateReviewToList(response.data);
-      setSuccessMessage('Review submitted successfully!');
+      setSuccessMessage('Request submitted successfully!');
       
       // Reset form fields
       setPhoneModel('');
