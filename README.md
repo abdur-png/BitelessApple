@@ -1,42 +1,35 @@
-# SpecMyPhone
+# BitelessApple
 
 ## Overview
 
-Choosing a smartphone, tablet, or laptop involves navigating an array of features and specifications that can be overwhelming. SpecMyPhone aims to simplify this by allowing users to suggest and vote on features they would like to see in these devices. After registering and logging in, users can view various proposed features, upvote them, and even submit their own ideas.
+In the digital age where choices are vast, the need for clear and accessible reviews is more pronounced than ever. BitelessApple serves this very purpose for tech enthusiasts. This web application allows users to share their insights on the latest apple devices, creating a community-driven platform for tech reviews. Users can submit detailed feature requests and ratings for their favorite devices, contributing to a comprehensive database of user-generated reviews.
 
 ## Data Model
 
-The application will store Users, Phones, and Reviews.
+The application will store Devices and Reviews:
 
-- Users can save multiple phones to their favorites.
-- Each phone can have multiple reviews.
+- Users can post multiple reviews (one-to-many relationship)
+- Each review is associated with a specific device (many-to-one relationship)
 
-An Example User:
+An Example Device:
 
 ```javascript
 {
-  "username": "TechGeek123",
-  "hash": "a_password_hash",
-  "savedPhones": // an array of references to Phone documents
+  "deviceName": "iPhone 15 Pro Max",
+  "manufacturer": "Apple",
+  "reviews": ["array of references to Review documents"]
 }
 ```
 
-An Example List with Embedded Items:
+An Example Review:
 
 ```javascript
 {
-  "brand": "Apple",
-  "model": "iPhone 13",
-  "specs": {
-    "screenSize": "6.1 inches",
-    "battery": "3200 mAh",
-    ...
-  },
-  "reviews": [
-    { "user": "techgeek123", "rating": 5, "comment": "Loved the camera!"},
-    ...
-  ],
-  "createdAt": // timestamp
+  "user": "reference to a User object",
+  "device": "reference to a Device object",
+  "rating": 5,
+  "comment": "The new camera is revolutionary!",
+  "createdAt": "timestamp"
 }
 
 ```
@@ -53,93 +46,53 @@ Path to First Draft Schema(db.mjs)[db.mjs]
 
 ![list create](documentation/homepage.png)
 
-/list - login page
+/list - review-form
 
-![list](documentation/login_page.png)
+![list](documentation//review-form.png)
 
-/list - phone details page
+/list - phone review page
 
-![list](documentation/phone_details_page.png)
+![list](documentation/phone-review.png)
 
-/list - reviews page
+/list - all-reviews
 
-![list](documentation/reviews_page.png)
+![list](documentation/all-reviews.png)
 
 ## Site map
 
-Home Page:
-The landing page with an overview of "SpecMyPhone" and its features.
-Links to:
+Home Page
+└── Review Form
+└── Submit Review -> Redirects back to Review Form upon submission
+└── All Reviews
+└── Individual Phone Review Page (for each device listed)
 
-1. Login
-2. Register
-3. Browse Specs (for non-registered users)
-
-Login Page:
-Where existing users can enter their credentials to log in.
-Links to:
-
-1. Home Page (if user chooses not to login)
-2. Register (if a user doesn't have an account)
-
-Register Page:
-New users can create an account.
-Links to:
-
-1. Home Page (if user chooses not to register)
-2. Login (for existing users)
-
-Add New Phone Review Page:
-A form where users can input and save reviews for a phone model.
-Links to:
-
-1. User Dashboard (upon saving or if user chooses to go back without adding)
-
-Individual Phone Review Page:
-Detailed view of specific phone specs where users can rate, edit, or share their reviews.
-Links to:
-
-1. User Dashboard (via navigation bar or after making modifications)
-2. Comparison Page (if a user wants to compare specs with another phone)
+1. Home Page (/list/create): This is the landing page where users can navigate to the review form to write a review, or view all reviews. It acts as the central hub for the application.
+2. Review Form (/list): A page where users can fill out a form to submit their review for a particular device. After submitting a review, they can return to the home page or go to the 'All Reviews' page to see all submissions.
+3. All Reviews (/list): This page lists all devices that have been reviewed. Users can click on a device to read all reviews related to it.
+4. Individual Phone Review Page (/list/slug): A dedicated page for each device where users can read all the reviews for that specific device. The 'slug' in the URL would be replaced by a unique identifier for each device, such as 'iPhone-15-Pro'.
 
 ## User Stories or Use Cases
 
-As a non-registered user, I can:
-
-1. Register a new account with the site.
-2. View the homepage with a list of phones.
-3. View individual phone details without the option to review or add to favorites.
-4. Access the login page.
-
-As a user, I can:
-
-1. Log in to the site.
-2. View the homepage with a list of phones.
-3. View details of individual phones.
-4. Remove a phone from my favorites.
-5. Write a review for a specific phone.
-6. Edit or delete my review for a specific phone.
-7. Upvote or downvote reviews
+1. As a new visitor, I will be able to understand the purpose of the app upon landing on the homepage.
+2. As a user, I will be able to easily navigate from the homepage to the review form, so that I can quickly start writing a review.
+3. As a user, I will be able to be able to choose a device from a dropdown list on the review form, so that I can categorize my review correctly.
+4. As a user, I will be able to rate a device and write a detailed review, so that I can share my opinions and experiences with other users.
+5. As a user, I will be able to view all my submitted reviews on the review form page after submission, so that I can confirm my review has been posted.
+6. As a user, I will be able to see a list of all devices that have been reviewed on the 'All Reviews' page, so that I can browse reviews from other users.
+7. As a user, when I click on a device name on the 'All Reviews' page, I will be able to see all the reviews for that specific device, so that I can understand what others think about it.
+8. As a user, I will be able to search through the comments on the device review page to find specific information, so that I can quickly find the most relevant reviews.
+9. As a user, I will be able to see an average rating and the most requested features on the device review page, so that I can get a quick overview of user opinions.
+10. As a potential reviewer, I will be able to access the review form from any page, so that I can start writing a review at any moment.
+11. As a user, I will be able to be able to navigate back to the homepage from any page, so that I can start a new task without using the browser's back button.
 
 ## Research Topics
 
 Perform client-side form validation using custom JavaScript or JavaScript library:
 
-1. Utilize React's controlled components for form inputs to ensure that the state always represents the input value.
-2. Incorporate custom JavaScript validation functions that check form inputs, such as email format, password strength, or phone model uniqueness.
-3. Integrate libraries like react-hook-form or formik to handle complex validation and form management seamlessly.
-
-Errors must be integrated into the DOM:
-
-1. Display form validation errors directly in the UI, right below the associated input field.
-2. Utilize React's conditional rendering to display error messages only when there's a validation error for a specific input field.
-3. Ensure that errors are not only clear and descriptive but also accessible for screen readers and compliant with web accessibility standards.
-
-Use a CSS framework or UI toolkit, with a reasonable amount of customization of the framework (don't just use stock Bootstrap - minimally configure a theme):
-
-1. Bootstrap: Integrate Bootstrap with React using the react-bootstrap library for a seamless experience. Customize Bootstrap's default theme using SCSS variables to reflect the unique branding of "SpecMyPhone".
-2. Enhance the user interface with Bootstrap's responsive grid system, ensuring the website is mobile-friendly and looks great on devices of all sizes.
-3. For dynamic UI components, utilize React-Bootstrap components like Modals, Dropdowns, and Alerts to keep the consistency of the UI and ensure better integration with the React lifecycle.
+1. (3 points) Use of dotenv for environment variable management.
+2. (6 points) Use of React for the frontend.
+3. (1 point) Basic client-side form validation implemented in JavaScript:
+   Implemented basic client-side validation in your ReviewForm component. The validation logic prevents form submission if certain fields like rating and comment are empty. This ensures that users cannot submit incomplete forms, which improves the quality of the data being submitted to your server:
 
 ## [Link to Initial Main Project File](app.mjs)
 
@@ -147,4 +100,4 @@ Link to project file [https://github.com/nyu-csci-ua-0467-001-002-fall-2023/fina
 
 ## Annotations / References Used
 
-none
+1. React documentation for building the UI [https://www.youtube.com/watch?v=SqcY0GlETPk&t=725s]

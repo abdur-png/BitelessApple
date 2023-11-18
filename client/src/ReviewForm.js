@@ -30,7 +30,6 @@ const ReviewForm = ({ addOrUpdateReviewToList, reviewToEdit, setReviewToEdit }) 
     'HomePod',
   ];
 
-  // If editing a review, set the form fields to the current review's values
   useEffect(() => {
     if (reviewToEdit) {
       setPhoneModel(reviewToEdit.phoneName || iphoneModels[0]);
