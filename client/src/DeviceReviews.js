@@ -6,12 +6,13 @@ const DeviceReviews = () => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { deviceName } = useParams(); // Extract the device name from URL params
+  const [sortDirection, setSortDirection] = useState('desc');
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const { deviceName } = useParams(); 
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        // Encode the deviceName to ensure the URL is correctly formatted
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/phones/${encodeURIComponent(deviceName)}/reviews`);
         setReviews(response.data);
         setLoading(false);
@@ -23,8 +24,25 @@ const DeviceReviews = () => {
     };
 
     fetchReviews();
-  }, [deviceName]); // Depend on deviceName to refetch when it changes
+  }, [deviceName]);
 
+  const sortedAndFilteredReviews = reviews
+    .sort((a, b) => {
+      if (sortDirection === 'asc') {
+        return a.rating - b.rating;
+      } else {
+        return b.rating - a.rating;
+      }
+    })
+    .filter((review) => review.comment.toLowerCase().includes(searchKeyword));
+
+  const sortReviews = (direction) => {
+    setSortDirection(direction);
+  };
+
+  const searchFilter = (event) => {
+    setSearchKeyword(event.target.value.toLowerCase());
+  };
   const pageStyles = {
     backgroundColor: 'black',
     color: 'white',
@@ -33,11 +51,52 @@ const DeviceReviews = () => {
     position: 'fixed',
     top: 0,
     left: 0,
-    overflow: 'auto',
+    overflow: 'auto', 
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingTop: '100px',
+  };
+
+  const tableStyles = {
+    borderCollapse: 'collapse',
+    marginLeft: '0', // Aligns table to the left
+    boxShadow: '0 0 20px rgba(0, 0, 0, 0.15)',
+    width: 'auto', 
+    maxWidth: 'none',
+  };
+
+  const thStyles = {
+    backgroundColor: '#007bff', // Blue header background
+    color: 'white',
+    padding: '10px',
+    borderBottom: '1px solid #ffffff',
+    width: '100px', // Sets a fixed width for the "Rating" column
+    width: '50px', // Adjust width for the "Rating" column
+    borderRight: '1px solid #ffffff',
+  };
+
+  const tdStyles = {
+    padding: '10px',
+    borderBottom: '1px solid #ffffff',
+    color: 'white',
+    borderRight: '1px solid #ffffff',
+  };
+
+  const searchContainerStyles = {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '20px',
+  };
+
+  const searchInputStyles = {
+    padding: '10px',
+    marginLeft: '10px',
+    fontSize: '1rem',
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+    height: '30px', // Reduced height for the search box
+    width: '200px',
   };
 
   if (loading) {
@@ -51,18 +110,34 @@ const DeviceReviews = () => {
   return (
     <div style={pageStyles}>
       <h1>Reviews for {deviceName}</h1>
-      <ul>
-        {reviews.length > 0 ? (
-          reviews.map((review) => (
-            <li key={review._id}>
-              <p>Rating: {review.rating}</p>
-              <p>Comment: {review.comment}</p>
-            </li>
-          ))
-        ) : (
-          <p>No reviews found for this device.</p>
-        )}
-      </ul>
+      <div style={searchContainerStyles}>
+        <label htmlFor="searchComments" style={{ marginRight: '10px' }}>Search comments:</label>
+        <input
+          id="searchComments"
+          type="text"
+          onChange={searchFilter}
+          placeholder="Type to search..."
+          style={searchInputStyles}
+        />
+      </div>
+      <table style={tableStyles}>
+        <thead>
+          <tr>
+            <th style={thStyles} onClick={() => sortReviews(sortDirection === 'asc' ? 'desc' : 'asc')}>
+              Rating {sortDirection === 'asc' ? '↑' : '↓'}
+            </th>
+            <th style={{ ...thStyles, width: 'auto', borderRight: 'none' }}>Comment</th> {/* Let the comment column take the remaining space */}
+          </tr>
+        </thead>
+        <tbody>
+          {sortedAndFilteredReviews.map((review) => (
+            <tr key={review._id}>
+              <td style={tdStyles}>{review.rating}</td>
+              <td style={{ ...tdStyles, borderRight: 'none' }}>{review.comment}</td> {/* Let the comment column take the remaining space */}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
