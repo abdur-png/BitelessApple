@@ -56,6 +56,10 @@ const DeviceReviews = () => {
     flexDirection: 'column',
     alignItems: 'flex-start',
     paddingTop: '100px',
+    paddingLeft: '80px',
+  };
+  const headingStyles = {
+    marginBottom: '40px', // Increase the distance between the heading and the search bar
   };
 
   const tableStyles = {
@@ -64,6 +68,7 @@ const DeviceReviews = () => {
     boxShadow: '0 0 20px rgba(0, 0, 0, 0.15)',
     width: 'auto', 
     maxWidth: 'none',
+    border: '1px solid #ffffff',
   };
 
   const thStyles = {
@@ -72,8 +77,8 @@ const DeviceReviews = () => {
     padding: '10px',
     borderBottom: '1px solid #ffffff',
     width: '100px', // Sets a fixed width for the "Rating" column
-    width: '50px', // Adjust width for the "Rating" column
     borderRight: '1px solid #ffffff',
+    border: '1px solid #ffffff',
   };
 
   const tdStyles = {
@@ -81,6 +86,7 @@ const DeviceReviews = () => {
     borderBottom: '1px solid #ffffff',
     color: 'white',
     borderRight: '1px solid #ffffff',
+    border: '1px solid #ffffff',
   };
 
   const searchContainerStyles = {
@@ -132,8 +138,8 @@ const DeviceReviews = () => {
         <tbody>
           {sortedAndFilteredReviews.map((review) => (
             <tr key={review._id}>
-              <td style={tdStyles}>{review.rating}</td>
-              <td style={{ ...tdStyles, borderRight: 'none' }}>{review.comment}</td> {/* Let the comment column take the remaining space */}
+                <td style={{ ...tdStyles, textAlign: 'center' }}>{review.rating}</td>
+                <td style={tdStyles}>{review.comment}</td>
             </tr>
           ))}
         </tbody>
