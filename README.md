@@ -63,12 +63,6 @@ Path to First Draft Schema(db.mjs)[db.mjs]
 /list - sitemap
 ![list](documentation/sitemap.png)
 
-Home Page
-└── Review Form
-└── Submit Review -> Redirects back to Review Form upon submission
-└── All Reviews
-└── Individual Phone Review Page (for each device listed)
-
 1. Home Page (/list/create): This is the landing page where users can navigate to the review form to write a review, or view all reviews. It acts as the central hub for the application.
 2. Review Form (/list): A page where users can fill out a form to submit their review for a particular device. After submitting a review, they can return to the home page or go to the 'All Reviews' page to see all submissions.
 3. All Reviews (/list): This page lists all devices that have been reviewed. Users can click on a device to read all reviews related to it.
