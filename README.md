@@ -60,6 +60,9 @@ Path to First Draft Schema(db.mjs)[db.mjs]
 
 ## Site map
 
+/list - sitemap
+![list](documentation/sitemap.png)
+
 Home Page
 └── Review Form
 └── Submit Review -> Redirects back to Review Form upon submission
