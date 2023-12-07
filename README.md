@@ -34,12 +34,6 @@ An Example Review:
 
 ```
 
-## [Link to Commented First Draft Schema](db.mjs)
-
-Permalink to First Draft Schema(db.mjs) [https://github.com/nyu-csci-ua-0467-001-002-fall-2023/final-project-abdur-png/blob/de3e7c53460a8f87c15fbb57b1881dad3b52876c/db.mjs]
-
-Path to First Draft Schema(db.mjs)[db.mjs]
-
 ## Wireframes
 
 /list/create - home page
@@ -82,16 +76,6 @@ Path to First Draft Schema(db.mjs)[db.mjs]
 10. As a potential reviewer, I will be able to access the review form from any page, so that I can start writing a review at any moment.
 11. As a user, I will be able to be able to navigate back to the homepage from any page, so that I can start a new task without using the browser's back button.
 
-## Research Topics
-
-Perform client-side form validation using custom JavaScript or JavaScript library:
-
-1. (3 points) Use of dotenv for environment variable management.
-2. (6 points) Use of React for the frontend.
-3. (1 point) Basic client-side form validation implemented in JavaScript:
-   Implemented basic client-side validation in your ReviewForm component. The validation logic prevents form submission if certain fields like rating and comment are empty. This ensures that users cannot submit incomplete forms, which improves the quality of the data being submitted to your server:
-
-## [Link to Initial Main Project File](app.mjs)
 
 Link to project file [https://github.com/nyu-csci-ua-0467-001-002-fall-2023/final-project-abdur-png.git]
 
